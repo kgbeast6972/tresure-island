@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
   <title>Treasure Island</title>
   <style>
     :root {
@@ -28,9 +28,7 @@
     }
 
     @media (min-width: 640px) {
-      body {
-        padding: 2rem;
-      }
+      body { padding: 2rem; }
     }
 
     header {
@@ -42,16 +40,12 @@
       color: var(--accent);
       margin-bottom: 0.5rem;
       font-size: 1.5rem;
-      word-break: break-word;
     }
 
     @media (min-width: 640px) {
-      h1 {
-        font-size: 2rem;
-      }
+      h1 { font-size: 2rem; }
     }
 
-    /* Responsive Controls Bar */
     .toolbar {
       max-width: 1200px;
       margin: 0 auto 1.5rem auto;
@@ -74,23 +68,19 @@
       color: var(--text);
       padding: 0.75rem 1rem;
       border-radius: 8px;
-      font-size: 16px; /* Prevents auto-zoom on iOS Safari */
+      font-size: 16px; /* Prevents auto-zoom on iOS */
       outline: none;
       width: 100%;
     }
 
     @media (min-width: 640px) {
-      .search-box {
-        flex: 1;
-      }
-      .select-box {
-        width: auto;
-      }
+      .search-box { flex: 1; }
+      .select-box { width: auto; }
     }
 
     .grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
       gap: 1rem;
       max-width: 1200px;
       margin: 0 auto;
@@ -108,21 +98,13 @@
       border-radius: 12px;
       overflow: hidden;
       box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
-      transition: transform 0.2s, box-shadow 0.2s;
       cursor: pointer;
       -webkit-tap-highlight-color: transparent;
     }
 
-    @media (hover: hover) {
-      .card:hover {
-        transform: translateY(-4px);
-        box-shadow: 0 10px 15px -3px rgba(56, 189, 248, 0.2);
-      }
-    }
-
     .thumbnail-container {
       width: 100%;
-      height: 180px;
+      height: 160px;
       background: #000;
       position: relative;
       display: flex;
@@ -149,9 +131,7 @@
       font-weight: bold;
     }
 
-    .card-info {
-      padding: 1rem;
-    }
+    .card-info { padding: 1rem; }
 
     .card-title {
       font-size: 0.95rem;
@@ -161,54 +141,73 @@
       text-overflow: ellipsis;
     }
 
-    /* Mobile Responsive Modal Player */
+    /* Fixed Mobile Video Modal */
     .modal {
       display: none;
       position: fixed;
-      top: 0; 
-      left: 0; 
-      width: 100%; 
-      height: 100%;
-      background: rgba(0, 0, 0, 0.9);
+      inset: 0;
+      background: rgba(0, 0, 0, 0.92);
       z-index: 1000;
       align-items: center;
       justify-content: center;
-      padding: 1rem;
+      padding: 0.75rem;
+    }
+
+    .modal-wrapper {
+      width: 100%;
+      max-width: 900px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
     }
 
     .modal-content {
       width: 100%;
-      max-width: 900px;
-      aspect-ratio: 16 / 9;
-      background: #000;
       position: relative;
+      padding-top: 56.25%; /* 16:9 Aspect Ratio */
+      background: #000;
       border-radius: 8px;
       overflow: hidden;
     }
 
     .modal iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
       width: 100%;
       height: 100%;
       border: none;
     }
 
+    .modal-controls {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .direct-btn {
+      background: var(--accent);
+      color: #000;
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.85rem;
+    }
+
     .close-btn {
-      position: absolute;
-      top: 8px;
-      right: 12px;
       color: #fff;
-      font-size: 2rem;
+      font-size: 1.8rem;
       line-height: 1;
       cursor: pointer;
-      z-index: 1010;
-      background: rgba(0, 0, 0, 0.6);
+      background: rgba(255, 255, 255, 0.15);
       width: 36px;
       height: 36px;
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
-      border: 1px solid rgba(255, 255, 255, 0.2);
+      border: none;
     }
   </style>
 </head>
@@ -219,7 +218,6 @@
     <p style="color: var(--text-dim);">by : ibrahim amed</p>
   </header>
 
-  <!-- Responsive Search & Sorting Toolbar -->
   <div class="toolbar">
     <input type="text" id="searchInput" class="search-box" placeholder="Search videos..." oninput="applyFilters()" />
     <select id="sortSelect" class="select-box" onchange="applyFilters()">
@@ -230,17 +228,20 @@
 
   <div class="grid" id="videoGrid"></div>
 
-  <!-- Mobile-Friendly Video Modal -->
+  <!-- Mobile-Safe Modal Player -->
   <div class="modal" id="videoModal">
-    <div class="modal-content">
-      <span class="close-btn" onclick="closePlayer()">&times;</span>
-      <iframe 
-        id="playerFrame" 
-        allow="autoplay; encrypted-media; picture-in-picture; fullscreen" 
-        allowfullscreen="true" 
-        webkitallowfullscreen="true" 
-        mozallowfullscreen="true">
-      </iframe>
+    <div class="modal-wrapper">
+      <div class="modal-controls">
+        <a id="directLink" href="#" target="_blank" class="direct-btn">📱 Open in Drive App / External</a>
+        <button class="close-btn" onclick="closePlayer()">&times;</button>
+      </div>
+      <div class="modal-content">
+        <iframe 
+          id="playerFrame" 
+          allow="autoplay; encrypted-media; picture-in-picture; fullscreen" 
+          allowfullscreen>
+        </iframe>
+      </div>
     </div>
   </div>
 
@@ -312,9 +313,13 @@
     function openPlayer(fileId) {
       const modal = document.getElementById('videoModal');
       const iframe = document.getElementById('playerFrame');
+      const directLink = document.getElementById('directLink');
+
       iframe.src = `https://drive.google.com/file/d/${fileId}/preview`;
+      directLink.href = `https://drive.google.com/file/d/${fileId}/view`;
+
       modal.style.display = 'flex';
-      document.body.style.overflow = 'hidden'; // Prevents background scrolling on mobile
+      document.body.style.overflow = 'hidden';
     }
 
     function closePlayer() {
@@ -322,7 +327,7 @@
       const iframe = document.getElementById('playerFrame');
       iframe.src = '';
       modal.style.display = 'none';
-      document.body.style.overflow = 'auto'; // Restores scrolling
+      document.body.style.overflow = 'auto';
     }
 
     window.onclick = function(event) {
