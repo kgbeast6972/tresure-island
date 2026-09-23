@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>tressure island</title>
+  <title>Treasure Island</title>
   <style>
     :root {
       --bg: #0f172a;
@@ -23,25 +23,84 @@
     body {
       background-color: var(--bg);
       color: var(--text);
-      padding: 2rem;
+      padding: 1rem;
+      min-height: 100vh;
+    }
+
+    @media (min-width: 640px) {
+      body {
+        padding: 2rem;
+      }
     }
 
     header {
       text-align: center;
-      margin-bottom: 2rem;
+      margin-bottom: 1.5rem;
     }
 
     h1 {
       color: var(--accent);
       margin-bottom: 0.5rem;
+      font-size: 1.5rem;
+      word-break: break-word;
+    }
+
+    @media (min-width: 640px) {
+      h1 {
+        font-size: 2rem;
+      }
+    }
+
+    /* Responsive Controls Bar */
+    .toolbar {
+      max-width: 1200px;
+      margin: 0 auto 1.5rem auto;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    @media (min-width: 640px) {
+      .toolbar {
+        flex-direction: row;
+        align-items: center;
+        gap: 1rem;
+      }
+    }
+
+    .search-box, .select-box {
+      background: var(--card-bg);
+      border: 1px solid #334155;
+      color: var(--text);
+      padding: 0.75rem 1rem;
+      border-radius: 8px;
+      font-size: 16px; /* Prevents auto-zoom on iOS Safari */
+      outline: none;
+      width: 100%;
+    }
+
+    @media (min-width: 640px) {
+      .search-box {
+        flex: 1;
+      }
+      .select-box {
+        width: auto;
+      }
     }
 
     .grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-      gap: 1.5rem;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 1rem;
       max-width: 1200px;
       margin: 0 auto;
+    }
+
+    @media (min-width: 640px) {
+      .grid {
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 1.5rem;
+      }
     }
 
     .card {
@@ -51,16 +110,19 @@
       box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
       transition: transform 0.2s, box-shadow 0.2s;
       cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
     }
 
-    .card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 10px 15px -3px rgba(56, 189, 248, 0.2);
+    @media (hover: hover) {
+      .card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 10px 15px -3px rgba(56, 189, 248, 0.2);
+      }
     }
 
     .thumbnail-container {
       width: 100%;
-      height: 160px;
+      height: 180px;
       background: #000;
       position: relative;
       display: flex;
@@ -92,27 +154,31 @@
     }
 
     .card-title {
-      font-size: 1rem;
+      font-size: 0.95rem;
       font-weight: 600;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
     }
 
-    /* Video Modal */
+    /* Mobile Responsive Modal Player */
     .modal {
       display: none;
       position: fixed;
-      top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(0, 0, 0, 0.85);
-      z-index: 100;
+      top: 0; 
+      left: 0; 
+      width: 100%; 
+      height: 100%;
+      background: rgba(0, 0, 0, 0.9);
+      z-index: 1000;
       align-items: center;
       justify-content: center;
+      padding: 1rem;
     }
 
     .modal-content {
-      width: 90%;
-      max-width: 800px;
+      width: 100%;
+      max-width: 900px;
       aspect-ratio: 16 / 9;
       background: #000;
       position: relative;
@@ -128,28 +194,53 @@
 
     .close-btn {
       position: absolute;
-      top: -40px;
-      right: 0;
-      color: var(--text);
+      top: 8px;
+      right: 12px;
+      color: #fff;
       font-size: 2rem;
+      line-height: 1;
       cursor: pointer;
+      z-index: 1010;
+      background: rgba(0, 0, 0, 0.6);
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid rgba(255, 255, 255, 0.2);
     }
   </style>
 </head>
 <body>
 
   <header>
-    <h1>EPISODE 12TH GRADE </h1>
-    <p style="color: var(--text-dim);">by : ibrahim amed  </p>
+    <h1>EPISODE 12TH GRADE</h1>
+    <p style="color: var(--text-dim);">by : ibrahim amed</p>
   </header>
+
+  <!-- Responsive Search & Sorting Toolbar -->
+  <div class="toolbar">
+    <input type="text" id="searchInput" class="search-box" placeholder="Search videos..." oninput="applyFilters()" />
+    <select id="sortSelect" class="select-box" onchange="applyFilters()">
+      <option value="name-asc">Name (A-Z / 1-9)</option>
+      <option value="name-desc">Name (Z-A / 9-1)</option>
+    </select>
+  </div>
 
   <div class="grid" id="videoGrid"></div>
 
-  <!-- Modal Player -->
+  <!-- Mobile-Friendly Video Modal -->
   <div class="modal" id="videoModal">
     <div class="modal-content">
       <span class="close-btn" onclick="closePlayer()">&times;</span>
-      <iframe id="playerFrame" allow="autoplay" allowfullscreen></iframe>
+      <iframe 
+        id="playerFrame" 
+        allow="autoplay; encrypted-media; picture-in-picture; fullscreen" 
+        allowfullscreen="true" 
+        webkitallowfullscreen="true" 
+        mozallowfullscreen="true">
+      </iframe>
     </div>
   </div>
 
@@ -157,16 +248,36 @@
     const API_KEY = 'AIzaSyA_Tiosx991yAPAThr6yKMQ69p71a4-7wQ';
     const FOLDER_ID = '1vI-dFOfgodj9LQ__fYSNd9VCe7_1nxLm';
 
+    let rawVideos = [];
+
     async function fetchVideos() {
       const url = `https://www.googleapis.com/drive/v3/files?q='${FOLDER_ID}'+in+parents+and+trashed=false&fields=files(id,name,thumbnailLink)&key=${API_KEY}`;
       
       try {
         const response = await fetch(url);
         const data = await response.json();
-        renderVideos(data.files || []);
+        rawVideos = data.files || [];
+        applyFilters();
       } catch (err) {
         console.error("Error fetching videos:", err);
       }
+    }
+
+    function applyFilters() {
+      const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+      const sortValue = document.getElementById('sortSelect').value;
+
+      let filtered = rawVideos.filter(video => 
+        video.name.toLowerCase().includes(searchTerm)
+      );
+
+      filtered.sort((a, b) => {
+        return sortValue === 'name-asc' 
+          ? a.name.localeCompare(b.name, undefined, { numeric: true, sensitivity: 'base' })
+          : b.name.localeCompare(a.name, undefined, { numeric: true, sensitivity: 'base' });
+      });
+
+      renderVideos(filtered);
     }
 
     function renderVideos(files) {
@@ -174,7 +285,7 @@
       grid.innerHTML = '';
 
       if (files.length === 0) {
-        grid.innerHTML = '<p style="grid-column: 1/-1; text-align:center;">No videos found in folder.</p>';
+        grid.innerHTML = '<p style="grid-column: 1/-1; text-align:center; padding: 2rem 0;">No videos found.</p>';
         return;
       }
 
@@ -187,7 +298,7 @@
 
         card.innerHTML = `
           <div class="thumbnail-container">
-            ${thumb ? `<img src="${thumb}" alt="${file.name}">` : ''}
+            ${thumb ? `<img src="${thumb}" alt="${file.name}" loading="lazy">` : ''}
             <div class="play-btn">▶</div>
           </div>
           <div class="card-info">
@@ -203,6 +314,7 @@
       const iframe = document.getElementById('playerFrame');
       iframe.src = `https://drive.google.com/file/d/${fileId}/preview`;
       modal.style.display = 'flex';
+      document.body.style.overflow = 'hidden'; // Prevents background scrolling on mobile
     }
 
     function closePlayer() {
@@ -210,11 +322,18 @@
       const iframe = document.getElementById('playerFrame');
       iframe.src = '';
       modal.style.display = 'none';
+      document.body.style.overflow = 'auto'; // Restores scrolling
     }
 
     window.onclick = function(event) {
       const modal = document.getElementById('videoModal');
       if (event.target === modal) {
+        closePlayer();
+      }
+    }
+
+    window.onkeydown = function(event) {
+      if (event.key === "Escape") {
         closePlayer();
       }
     }
