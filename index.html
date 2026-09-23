@@ -139,8 +139,8 @@
 <body>
 
   <header>
-    <h1>Shared Video Gallery</h1>
-    <p style="color: var(--text-dim);">Watch videos directly from Google Drive</p>
+    <h1>EPISODE 12TH GRADE </h1>
+    <p style="color: var(--text-dim);">by : ibrahim amed  </p>
   </header>
 
   <div class="grid" id="videoGrid"></div>
@@ -155,10 +155,10 @@
 
   <script>
     const API_KEY = 'AIzaSyA_Tiosx991yAPAThr6yKMQ69p71a4-7wQ';
-    const FOLDER_ID = 'https://drive.google.com/drive/folders/1vI-dFOfgodj9LQ__fYSNd9VCe7_1nxLm?usp=sharing';
-YOUR_FOLDER_ID
+    const FOLDER_ID = '1vI-dFOfgodj9LQ__fYSNd9VCe7_1nxLm';
+
     async function fetchVideos() {
-      const url = `https://www.googleapis.com/content/v3/files?q='${FOLDER_ID}'+in+parents+and+mimeType+contains+'video/'&fields=files(id,name,thumbnailLink)&key=${API_KEY}`;
+      const url = `https://www.googleapis.com/drive/v3/files?q='${FOLDER_ID}'+in+parents+and+trashed=false&fields=files(id,name,thumbnailLink)&key=${API_KEY}`;
       
       try {
         const response = await fetch(url);
@@ -174,7 +174,7 @@ YOUR_FOLDER_ID
       grid.innerHTML = '';
 
       if (files.length === 0) {
-        grid.innerHTML = '<p style="grid-column: 1/-1; text-align:center;">No videos found.</p>';
+        grid.innerHTML = '<p style="grid-column: 1/-1; text-align:center;">No videos found in folder.</p>';
         return;
       }
 
